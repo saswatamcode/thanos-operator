@@ -34,3 +34,13 @@ COPY --from=builder /workspace/manager .
 USER 65532:65532
 
 ENTRYPOINT ["/manager"]
+
+LABEL com.redhat.component="rhobs-thanos-operator" \
+  name="rhobs-thanos-operator" \
+  summary="rhobs-thanos-operator" \
+  io.openshift.expose-services="" \
+  io.openshift.tags="data,images" \
+  io.k8s.display-name="rhobs-thanos-operator" \
+  maintainer="" \
+  description="rhobs-thanos-operator" \
+  io.k8s.description="rhobs-thanos-operator"
