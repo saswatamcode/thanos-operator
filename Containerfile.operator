@@ -1,5 +1,5 @@
 # Build the manager binary
-FROM brew.registry.redhat.io/rh-osbs/openshift-golang-builder:rhel_8_golang_1.22 as builder
+FROM brew.registry.redhat.io/rh-osbs/openshift-golang-builder:rhel_9_golang_1.23 as builder
 ARG TARGETOS
 ARG TARGETARCH
 
@@ -28,9 +28,34 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o ma
   
   # Use distroless as minimal base image to package the manager binary
   # Refer to https://github.com/GoogleContainerTools/distroless for more details
-FROM gcr.io/distroless/static:nonroot
+FROM registry.access.redhat.com/ubi9/ubi-minimal:latest
 WORKDIR /
 COPY --from=builder /workspace/manager .
 USER 65532:65532
 
 ENTRYPOINT ["/manager"]
+
+ARG IMAGE_NAME
+ARG IMAGE_DESCRIPTION
+ARG IMAGE_DISPLAY_NAME
+ARG IMAGE_NAME_ARCH
+ARG IMAGE_MAINTAINER
+ARG IMAGE_VENDOR
+ARG IMAGE_VERSION
+ARG IMAGE_RELEASE
+ARG IMAGE_SUMMARY
+ARG IMAGE_OPENSHIFT_TAGS
+
+LABEL org.label-schema.vendor="Red Hat" \
+  vendor="Red Hat, Inc." \
+  com.redhat.component="c" \
+  name="$IMAGE_NAME" \
+  maintainer="$IMAGE_MAINTAINER" \
+  version="$IMAGE_VERSION" \
+  release="$IMAGE_RELEASE" \
+  description="rhobs-thanos-operator" \
+  summary="$IMAGE_SUMMARY" \
+  io.k8s.display-name="rhobs-thanos-operator" \
+  io.k8s.description="rhobs-thanos-operator" \
+  io.openshift.tags="$IMAGE_OPENSHIFT_TAGS"
+
