@@ -3566,6 +3566,7 @@ spec:
                     description: |-
                       BlockFilesConcurrency is the number of goroutines to use when to use when
                       fetching/uploading block files from object storage.
+                      Only used for Compactor, no-op for store gateway
                     format: int32
                     type: integer
                   blockMetaFetchConcurrency:
@@ -26976,6 +26977,7 @@ spec:
                     description: |-
                       BlockFilesConcurrency is the number of goroutines to use when to use when
                       fetching/uploading block files from object storage.
+                      Only used for Compactor, no-op for store gateway
                     format: int32
                     type: integer
                   blockMetaFetchConcurrency:
@@ -27240,6 +27242,12 @@ spec:
                   When a resource is paused, no actions except for deletion
                   will be performed on the underlying objects.
                 type: boolean
+              replicas:
+                default: 1
+                description: Replicas is the number of store or store shard replicas.
+                format: int32
+                minimum: 1
+                type: integer
               resourceRequirements:
                 description: ResourceRequirements for the Thanos component container.
                 properties:
@@ -27303,12 +27311,6 @@ spec:
                 description: ShardingStrategy defines the sharding strategy for the
                   Store Gateways across object storage blocks.
                 properties:
-                  shardReplicas:
-                    default: 1
-                    description: ReplicaPerShard is the number of replicas per shard.
-                    format: int32
-                    minimum: 1
-                    type: integer
                   shards:
                     default: 1
                     description: Shards is the number of shards to split the data
@@ -27357,6 +27359,7 @@ spec:
                 type: string
             required:
             - objectStorageConfig
+            - replicas
             - shardingStrategy
             - storageSize
             type: object
@@ -31009,6 +31012,7 @@ spec:
                     description: |-
                       BlockFilesConcurrency is the number of goroutines to use when to use when
                       fetching/uploading block files from object storage.
+                      Only used for Compactor, no-op for store gateway
                     format: int32
                     type: integer
                   blockMetaFetchConcurrency:
@@ -54419,6 +54423,7 @@ spec:
                     description: |-
                       BlockFilesConcurrency is the number of goroutines to use when to use when
                       fetching/uploading block files from object storage.
+                      Only used for Compactor, no-op for store gateway
                     format: int32
                     type: integer
                   blockMetaFetchConcurrency:
@@ -54683,6 +54688,12 @@ spec:
                   When a resource is paused, no actions except for deletion
                   will be performed on the underlying objects.
                 type: boolean
+              replicas:
+                default: 1
+                description: Replicas is the number of store or store shard replicas.
+                format: int32
+                minimum: 1
+                type: integer
               resourceRequirements:
                 description: ResourceRequirements for the Thanos component container.
                 properties:
@@ -54746,12 +54757,6 @@ spec:
                 description: ShardingStrategy defines the sharding strategy for the
                   Store Gateways across object storage blocks.
                 properties:
-                  shardReplicas:
-                    default: 1
-                    description: ReplicaPerShard is the number of replicas per shard.
-                    format: int32
-                    minimum: 1
-                    type: integer
                   shards:
                     default: 1
                     description: Shards is the number of shards to split the data
@@ -54800,6 +54805,7 @@ spec:
                 type: string
             required:
             - objectStorageConfig
+            - replicas
             - shardingStrategy
             - storageSize
             type: object
@@ -55134,6 +55140,64 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: thanos-operator
+    app.kubernetes.io/instance: thanosquery-editor-role
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/part-of: thanos-operator
+  name: thanos-operator-thanosquery-editor-role
+rules:
+- apiGroups:
+  - monitoring.thanos.io
+  resources:
+  - thanosqueries
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - monitoring.thanos.io
+  resources:
+  - thanosqueries/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: thanos-operator
+    app.kubernetes.io/instance: thanosquery-viewer-role
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/part-of: thanos-operator
+  name: thanos-operator-thanosquery-viewer-role
+rules:
+- apiGroups:
+  - monitoring.thanos.io
+  resources:
+  - thanosqueries
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - monitoring.thanos.io
+  resources:
+  - thanosqueries/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: thanos-operator
   name: thanos-operator-thanosreceive-editor-role
@@ -55177,6 +55241,122 @@ rules:
   - monitoring.thanos.io
   resources:
   - thanosreceives/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: thanos-operator
+    app.kubernetes.io/instance: thanosruler-editor-role
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/part-of: thanos-operator
+  name: thanos-operator-thanosruler-editor-role
+rules:
+- apiGroups:
+  - monitoring.thanos.io
+  resources:
+  - thanosrulers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - monitoring.thanos.io
+  resources:
+  - thanosrulers/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: thanos-operator
+    app.kubernetes.io/instance: thanosruler-viewer-role
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/part-of: thanos-operator
+  name: thanos-operator-thanosruler-viewer-role
+rules:
+- apiGroups:
+  - monitoring.thanos.io
+  resources:
+  - thanosrulers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - monitoring.thanos.io
+  resources:
+  - thanosrulers/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: thanos-operator
+    app.kubernetes.io/instance: thanosstore-editor-role
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/part-of: thanos-operator
+  name: thanos-operator-thanosstore-editor-role
+rules:
+- apiGroups:
+  - monitoring.thanos.io
+  resources:
+  - thanosstores
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - monitoring.thanos.io
+  resources:
+  - thanosstores/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: thanos-operator
+    app.kubernetes.io/instance: thanosstore-viewer-role
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/part-of: thanos-operator
+  name: thanos-operator-thanosstore-viewer-role
+rules:
+- apiGroups:
+  - monitoring.thanos.io
+  resources:
+  - thanosstores
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - monitoring.thanos.io
+  resources:
+  - thanosstores/status
   verbs:
   - get
 ---
