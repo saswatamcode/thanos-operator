@@ -48,7 +48,7 @@ ARG IMAGE_OPENSHIFT_TAGS
 
 LABEL org.label-schema.vendor="Red Hat" \
   vendor="Red Hat, Inc." \
-  com.redhat.component="c" \
+  com.redhat.component="rhobs-thanos-operator" \
   name="$IMAGE_NAME" \
   maintainer="$IMAGE_MAINTAINER" \
   version="$IMAGE_VERSION" \
